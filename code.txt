@@ -1,0 +1,60 @@
+
+//Setting up variables/pins
+int MAGNET_PIN = D5;
+int SWITCH_PIN = D3;
+
+
+
+//Set-up
+void setup()
+    {
+        pinMode(MAGNET_PIN, INPUT_PULLUP); 
+        pinMode(SWITCH_PIN, INPUT_PULLUP); 
+    }
+
+
+
+//Main loop
+void loop() 
+    {
+       
+       
+       	if(digitalRead(SWITCH_PIN) == FALSE)
+            {
+                Particle.publish("device_status", "on");
+                magnets();
+            }
+        else
+            {
+                Particle.publish("device_status", "off");;
+                delay(1000); 
+                
+            }
+            
+    }
+
+
+
+
+
+
+void magnets()
+    {
+        
+        if (digitalRead(MAGNET_PIN) == TRUE)
+        {
+            Particle.publish("door_open", "open");  
+            delay(1000*60*10);   //1000 = 1 sec , 60 = 1 min,  _ = number of minutes I want to set the delay to.
+        }
+        else 
+        {
+            Particle.publish("door_closed", "closed");
+            delay(1000*5);       //5 second delay 
+        }
+        return;
+    }
+
+    // When magnet is connected to the sensor, the circuit is running normally and will return default settings.
+    // Once removed, it will trigger a change in the circuit, therefor creating a reading in the pin causing my 'if statement' to be true.
+    // I am making the delay on the open longer, as once I have been notified, I need time to react/message group chat/close the door.
+    // The close delay is short in order to keep the open reads accurate.
